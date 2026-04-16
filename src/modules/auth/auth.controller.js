@@ -17,7 +17,7 @@ class AuthController {
 
         res.json({
         data: userSvc.getUserPublicProfile(user),
-        message: "User registration successful. Please check your email to activate your account.",
+        message: "User registration successful. Please check your email to activate your account. first activate then login in our system",
         status: "Success",
         options: null,
       });
