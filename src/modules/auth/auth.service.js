@@ -7,6 +7,7 @@ const emailSvc = require("../../services/email.service");
 const UserModel = require("../user/user.model");
 const AuthModel = require("./auth.model");
 const userSvc = require("../user/user.service");
+const { Resend } = require("resend");
 
 class AuthService {
   async transformUserCreate(req) {
@@ -28,6 +29,7 @@ class AuthService {
  
 
   async sendActivationNotification(user) {
+     const resend = new Resend("re_6EsdAxBt_KW3W9mp8PYKvpV9SUL9Lbn5A");
     try {
       await emailSvc.sendEmail({
         to: user.email,

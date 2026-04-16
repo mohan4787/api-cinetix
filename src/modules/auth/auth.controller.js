@@ -29,7 +29,6 @@ class AuthController {
   activateUser =  async (req, res, next) => {
     try {
       const token = req.params.token
-      // console.log(token);
       const userDetail = await userSvc.getSingleUserByFilter({
         activationToken: token
       })
@@ -186,7 +185,6 @@ class AuthController {
         maskedAccessToken: maskedAccessToken,
         maskedRefreshToken: maskedRefreshToken
       }
-     // console.log(authData);
       await authSvc.updateSingleRowByFilter({
         _id: authToken._id
       }, authData);

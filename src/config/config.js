@@ -15,8 +15,10 @@ const SMTPConfig = {
     port: process.env.STMP_PORT,
     user: process.env.SMTP_USER,
     password: process.env.SMTP_PASSWORD,
-    from: process.env.SMTP_FROM
+    from: process.env.SMTP_FROM,
+    resendApiKey:process.env.RESEND_API_KEY
 }
+
 
 const DbConfig = {
   mongoDBUrl: process.env.MONGODB_URL,
