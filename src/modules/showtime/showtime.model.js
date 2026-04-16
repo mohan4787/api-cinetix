@@ -24,7 +24,7 @@ const ShowTimeSchema = new mongoose.Schema({
     screen: {
       type: String,
       required: true,
-      enum: ["SCREEN1", "SCREEN2", "SCREEN3"], // optional but recommended
+      enum: ["SCREEN1", "SCREEN2", "SCREEN3"], 
     },
 
     price:{
