@@ -4,7 +4,7 @@ const { Status } = require("../../config/constants");
 const UpcomingMovieSchema = new mongoose.Schema({
   title: {
     type: String,
-    min: 2,
+    min: 4,
     max: 100,
     required: true,
     unique: true,
