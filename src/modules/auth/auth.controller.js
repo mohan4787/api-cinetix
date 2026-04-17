@@ -33,6 +33,8 @@ activateUser = async (req, res, next) => {
       const userDetail = await userSvc.getSingleUserByFilter({
         activationToken: token
       });
+      console.log(userDetail);
+      
 
       if (!userDetail) {
         throw {
