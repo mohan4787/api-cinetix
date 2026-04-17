@@ -26,36 +26,38 @@ class AuthController {
     }
   };
 
-  activateUser =  async (req, res, next) => {
+activateUser = async (req, res, next) => {
     try {
-      const token = req.params.token
+      const token = req.body.token;
+
       const userDetail = await userSvc.getSingleUserByFilter({
         activationToken: token
-      })
-      if(!userDetail){
+      });
+
+      if (!userDetail) {
         throw {
           code: 404,
-          message: "user associated token not found or has been already activated. ",
+          message: "Invalid activation code or account already active.",
           status: "NOT_FOUND",
-        }
+        };
       }
-      const updatedUser = await userSvc.updateSingleUserByFilter({
-        _id: userDetail._id
-      },
-        {
-        activationToken: null,
-        status: Status.ACTIVE
-        }
-      
-    );
 
-      await authSvc.newUserWelcomeEmail(updatedUser)
+      const updatedUser = await userSvc.updateSingleUserByFilter(
+        { _id: userDetail._id },
+        {
+          activationToken: null,
+          status: Status.ACTIVE
+        }
+      );
+
+      await authSvc.newUserWelcomeEmail(updatedUser);
+
       res.json({
-        data: null,
-        message: "Account activated successfully. You can now login.",
-        status: "ACTIVATED SUCCESSFULLY",
+        data: userDetail,
+        message: "Account activated successfully. Welcome to CineTix!",
+        status: "ACTIVATED_SUCCESSFULLY",
         options: null
-      })
+      });
     } catch (exception) {
       next(exception);
     }

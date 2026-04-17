@@ -10,6 +10,15 @@ const randomStringGenerator = (length = 100) => {
   }
   return random;
 };
+const randomNumberGenerator = (len) => {
+    const chars = "0123456789";
+    let randomString = "";
+    for (let i = 0; i < len; i++) {
+        const pos = Math.floor(Math.random() * chars.length);
+        randomString += chars[pos];
+    }
+    return randomString;
+};
 
 const deleteFile = (filePath) => {
   if (fs.existsSync(filePath)) {
@@ -79,5 +88,6 @@ module.exports = {
   randomStringGenerator,
   deleteFile,
   generateSeat,
-  getDateRange
+  getDateRange,
+  randomNumberGenerator
 };
