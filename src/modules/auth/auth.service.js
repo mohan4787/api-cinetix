@@ -17,8 +17,6 @@ class AuthService {
       }
       data.password = bcrypt.hashSync(data.password, 12);
       data.status = Status.INACTIVE;
-      
-      // Changed from 100 to 6 for a user-friendly Activation Token (OTP)
       data.activationToken = randomNumberGenerator(6) 
       
       const { confirmPassword, ...mappedData } = data;

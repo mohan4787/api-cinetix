@@ -27,46 +27,77 @@ class AuthController {
   };
 
 activateUser = async (req, res, next) => {
-    try {
-      const token = req.body.token;
+  try {
+    const { email, activationToken } = req.body;
+    const token = activationToken;
+    console.log(email,token);
+    
 
-      const userDetail = await userSvc.getSingleUserByFilter({
-        activationToken: token
-      });
-      console.log(userDetail);
-      
-
-      if (!userDetail) {
-        throw {
-          code: 404,
-          message: "Invalid activation code or account already active.",
-          status: "NOT_FOUND",
-        };
-      }
-
-      const updatedUser = await userSvc.updateSingleUserByFilter(
-        { _id: userDetail._id },
-        {
-          activationToken: null,
-          status: Status.ACTIVE
-        }
-      );
-
-      await authSvc.newUserWelcomeEmail(updatedUser);
-
-      res.json({
-        data: userDetail,
-        message: "Account activated successfully. Welcome to CineTix!",
-        status: "ACTIVATED_SUCCESSFULLY",
-        options: null
-      });
-    } catch (exception) {
-      next(exception);
+    if (!email || !token) {
+      throw {
+        code: 400,
+        message: "Email and activation token are required.",
+        status: "VALIDATION_ERROR"
+      };
     }
-  };
+
+    const userDetail = await UserModel.findOne({ email });
+
+    if (!userDetail) {
+      throw {
+        code: 404,
+        message: "User not found.",
+        status: "USER_NOT_FOUND"
+      };
+    }
+
+    // Check if already activated
+    if (userDetail.status === Status.ACTIVE) {
+      throw {
+        code: 400,
+        message: "Account is already activated.",
+        status: "ACCOUNT_ALREADY_ACTIVATED"
+      };
+    }
+
+    console.log("DB Token:", userDetail.activationToken);
+    console.log("Request Token:", token);
+
+    // Compare activation token
+    if (
+      String(userDetail.activationToken).trim() !==
+      String(token).trim()
+    ) {
+      throw {
+        code: 400,
+        message: "Invalid activation token.",
+        status: "INVALID_ACTIVATION_TOKEN"
+      };
+    }
+
+    // Activate account
+    userDetail.status = Status.ACTIVE;
+    userDetail.activationToken = null;
+
+    await userDetail.save();
+
+    await authSvc.newUserWelcomeEmail(userDetail);
+
+    res.json({
+      data: userSvc.getUserPublicProfile(userDetail),
+      message: "Account activated successfully. Welcome to CineTix!",
+      status: "ACTIVATED_SUCCESSFULLY",
+      options: null
+    });
+
+  } catch (exception) {
+    next(exception);
+  }
+};
 
   loginUser = async (req, res, next) => { 
     try {
+      
       const {email,password} = req.body;
       const userDetail = await userSvc.getSingleUserByFilter({
         email: email
@@ -78,6 +109,9 @@ activateUser = async (req, res, next) => {
           status: "EMAIL_NOT_rEGISTERED"
         }
       }
+      console.log("GetUser:",userDetail);
+      
+      
       if(!bcrypt.compareSync(password, userDetail.password)) {
         throw {
           code: 422,
